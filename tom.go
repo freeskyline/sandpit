@@ -4,60 +4,49 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"log"
+	"os"
 
 	"github.com/BurntSushi/toml"
 )
 
 type tomlConfig struct {
 	Title   string
-	Owner   ownerInfo
-	DB      database `toml:"database"`
-	Servers map[string]server
-	Clients clients
+	Calc    calculation `toml:"calculation"`
 }
 
-type ownerInfo struct {
-	Name string
-	Org  string `toml:"organization"`
-	Bio  string
-	DOB  time.Time
+type calculation struct {
+	Data1   []int      `toml:"data1"`
+	Data2   []float64  `toml:"data2"`
 }
 
-type database struct {
-	Server  string
-	Ports   []int
-	ConnMax int `toml:"connection_max"`
-	Enabled bool
-}
-
-type server struct {
-	IP string
-	DC string
-}
-
-type clients struct {
-	Data  [][]interface{}
-	Hosts []string
-}
 
 func main() {
 	var config tomlConfig
+	var sum1 int
+	var sum2 float64
+	var strLine = "--------------------"
+
 	if _, err := toml.DecodeFile("tom.settings", &config); err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
-	fmt.Printf("Title: %s\n", config.Title)
-	fmt.Printf("Owner: %s (%s, %s), Born: %s\n",
-		config.Owner.Name, config.Owner.Org, config.Owner.Bio,
-		config.Owner.DOB)
-	fmt.Printf("Database: %s %v (Max conn. %d), Enabled? %v\n",
-		config.DB.Server, config.DB.Ports, config.DB.ConnMax,
-		config.DB.Enabled)
-	for serverName, server := range config.Servers {
-		fmt.Printf("Server: %s (%s, %s)\n", serverName, server.IP, server.DC)
+	log.Println(os.Args[0], " Title: ", config.Title, "\n")
+
+	fmt.Println("Data1: ", config.Calc.Data1)
+	for i, v := range config.Calc.Data1 {
+		sum1 += v
+		fmt.Printf("%d: %9d\n",i+1,v)
 	}
-	fmt.Printf("Client data: %v\n", config.Clients.Data)
-	fmt.Printf("Client hosts: %v\n", config.Clients.Hosts)
+	fmt.Println(strLine)
+	fmt.Printf("Sum: %7d\n\n", sum1)
+
+	fmt.Println("Data2: ", config.Calc.Data2)
+	for i, v := range config.Calc.Data2 {
+		sum2 += v
+		fmt.Printf("%d: %9.2f\n",i+1,v)
+	}
+	fmt.Println(strLine)
+	fmt.Printf("Sum: %7.2f\n", sum2)
 }
