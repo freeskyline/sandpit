@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
 	"strings"
 	"time"
 
@@ -40,8 +41,11 @@ var fileLog string
 
 
 func init() {
-	applName = os.Args[0]
-	fileSet  = "tom.settings"
+	strApp := path.Base(os.Args[0])
+	strExt := path.Ext(strApp)
+
+	applName = strings.TrimSuffix(strApp, strExt)
+	fileSet  = applName + ".settings"
 
 	if _, err = os.Stat(fileSet); os.IsNotExist(err) {
 		data := []byte(strDefaultSettings)
