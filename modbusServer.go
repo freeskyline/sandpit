@@ -1,4 +1,4 @@
-//modbusServer.go, Modbus Server Simulator
+//modbusServer.go, ModbusTCP and ModbusRTU Server Simulator
 
 package main
 
@@ -9,26 +9,35 @@ import (
 	"log"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/BurntSushi/toml"
+	"github.com/goburrow/serial"
+	"github.com/tbrandon/mbserver"
 )
 
 type tomlConfig struct {
 	Title   string
 	Enable  enable `toml:"enable"`
-	Calc    calculation `toml:"calculation"`
+	MbTcp   modbusTCP `toml:"modbusTCP"`
+	MbRtu   modbusRTU `toml:"modbusRtu"`
 }
 
 type enable struct {
 	LogsEn   bool  `toml:"logsAntoGenEnabled"`
-	CalcEn   bool  `toml:"calculationEnabled"`
+	MbTcpEn  bool  `toml:"modbusTCPEnabled"`
+	MbRtuEn  bool  `toml:"modbusRTUEnabled"`
 }
 
-type calculation struct {
-	Data1   []int      `toml:"data1"`
-	Data2   []float64  `toml:"data2"`
+type modbusTCP struct {
+	Ip    string    `toml:"ip"`
+	Port  int       `toml:"port"`
+}
+
+type modbusRTU struct {
+
 }
 
 var applName string
@@ -38,7 +47,8 @@ var buf bytes.Buffer
 var fileSet string
 var fileLog string
 
-
+var mbServerRTU *mbserver.Server
+var mbServerTCP *mbserver.Server
 
 func init() {
 	strApp := path.Base(os.Args[0])
@@ -74,42 +84,60 @@ func main() {
 		fileLog = applName +"_" + strTmp + ".log"
 		ioutil.WriteFile(fileLog, buf.Bytes(), 0644)
 	}
+
+	for {
+		time.Sleep(time.Second)
+	}
 }
 
 func executeSettings() {
-	if config.Enable.CalcEn { fnCalculation() }
-}
+	if config.Enable.MbTcpEn { 
+		mbServerTCP = mbserver.NewServer()
 
-func fnCalculation() {
-	const strLine = "--------------------\n"
-	var sum1 int
-	var sum2 float64
+		str := config.MbTcp.Ip + ":" + strconv.Itoa(config.MbTcp.Port)
+		err = mbServerTCP.ListenTCP(str)
+		if err != nil {
+			log.Printf("%v\n", err)
+			buf.WriteString(fmt.Sprintln("%v", err))
+		} else {
+			buf.WriteString(fmt.Sprintln("ModbusTCP Server listening on: ", str))
+		}
 
-	buf.WriteString(fmt.Sprintln("Data1: ", config.Calc.Data1))
-	for i, v := range config.Calc.Data1 {
-		sum1 += v
-		buf.WriteString(fmt.Sprintf("%d:\t%9d\n",i+1,v))
+		defer mbServerTCP.Close()
 	}
-	buf.WriteString(strLine)
-	buf.WriteString(fmt.Sprintf("Sum:\t%9d\n\n", sum1))
 
-	buf.WriteString(fmt.Sprintln("Data2: ", config.Calc.Data2))
-	for i, v := range config.Calc.Data2 {
-		sum2 += v
-		buf.WriteString(fmt.Sprintf("%d:\t%9.2f\n",i+1,v))
+	if config.Enable.MbRtuEn { 
+		mbServerRTU = mbserver.NewServer()
+
+		err = mbServerRTU.ListenRTU(&serial.Config{
+			Address:  "COM1",
+			BaudRate: 115200,
+			DataBits: 8,
+			StopBits: 1,
+			Parity:   "N",
+			Timeout:  10 * time.Second})
+		if err != nil {
+			log.Printf("%v\n", err)
+			buf.WriteString(fmt.Sprintln("%v", err))
+		} else {
+			buf.WriteString(fmt.Sprintln("ModbusRTU Server listening on: ", "COM1"))
+		}
+
+		defer mbServerRTU.Close()
 	}
-	buf.WriteString(strLine)
-	buf.WriteString(fmt.Sprintf("Sum:\t%9.2f\n\n", sum2))
 }
 
 const strDefaultSettings =
-`title = "TOM Default Settings"
+`title = "Default Settings for ModbusTCP and ModbusRTU Server Simulator"
 
 [enable]
-  logsAntoGenEnabled = true
-  calculationEnabled = true
+  logsAntoGenEnabled = false
+  modbusTCPEnabled = true
+  modbusRTUEnabled = false
 
-[calculation]
-  data1 = [11, 22, 33]
-  data2 = [100.01, 200.20, 300.50, 100.01, 200.20, 300.50, 100.01, 200.20, 300.50]
+[modbusTCP]
+  ip = "127.0.0.1"
+  port = 502
+
+[modbusRTU]
 `
