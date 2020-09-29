@@ -6,7 +6,13 @@ title = "Default Settings for ModbusTCP and ModbusRTU Server Simulator"
   modbusRTUEnabled = false
 
 [modbusTCP]
-  ip = "127.0.0.1"
+  ip   = "127.0.0.1"
   port = 502
 
 [modbusRTU]
+  address  = "COM1"
+  baudRate = 2400
+  dataBits = 8         #Data bits: 5, 6, 7 or 8
+  stopBits = 1         #Stop bits: 1 or 2
+  parity   = "N"       #Parity: "N" - None, "E" - Even, "O" - Odd
+  timeout  = 10        #Timeout Unit: Second

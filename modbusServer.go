@@ -37,11 +37,17 @@ type modbusTCP struct {
 }
 
 type modbusRTU struct {
-
+	Address  string         `toml:"address"`
+	BaudRate int            `toml:"baudRate"`
+	DataBits int            `toml:"dataBits"`
+	StopBits int            `toml:"stopBits"`
+	Parity   string         `toml:"parity"`
+	Timeout  time.Duration  `toml:"timeout"`
 }
 
 var applName string
 var config  tomlConfig
+var server *mbserver.Server
 var err error
 var buf bytes.Buffer
 var fileSet string
@@ -73,7 +79,7 @@ func main() {
 	buf.WriteString(fmt.Sprintln("Application  :", applName))
 	buf.WriteString(fmt.Sprintln("Configuration:", fileSet))
 	buf.WriteString(fmt.Sprintln("Config Title :", config.Title))
-	buf.WriteString(fmt.Sprintln("Date Time    :", strTime))
+	buf.WriteString(fmt.Sprintln("Date Time    :", strTime, "LIHUI"))
 	buf.WriteString("\n")
 
 	executeSettings()
@@ -91,40 +97,40 @@ func main() {
 }
 
 func executeSettings() {
-	if config.Enable.MbTcpEn { 
-		mbServerTCP = mbserver.NewServer()
+	server = mbserver.NewServer()
 
+	if config.Enable.MbTcpEn {
 		str := config.MbTcp.Ip + ":" + strconv.Itoa(config.MbTcp.Port)
-		err = mbServerTCP.ListenTCP(str)
-		if err != nil {
-			log.Printf("%v\n", err)
-			buf.WriteString(fmt.Sprintln("%v", err))
-		} else {
+		err = server.ListenTCP(str)
+
+		if err == nil {
 			buf.WriteString(fmt.Sprintln("ModbusTCP Server listening on: ", str))
-		}
-
-		defer mbServerTCP.Close()
-	}
-
-	if config.Enable.MbRtuEn { 
-		mbServerRTU = mbserver.NewServer()
-
-		err = mbServerRTU.ListenRTU(&serial.Config{
-			Address:  "COM1",
-			BaudRate: 115200,
-			DataBits: 8,
-			StopBits: 1,
-			Parity:   "N",
-			Timeout:  10 * time.Second})
-		if err != nil {
+		} else {
 			log.Printf("%v\n", err)
 			buf.WriteString(fmt.Sprintln("%v", err))
-		} else {
-			buf.WriteString(fmt.Sprintln("ModbusRTU Server listening on: ", "COM1"))
 		}
-
-		defer mbServerRTU.Close()
 	}
+
+	if config.Enable.MbRtuEn {
+		var cnf serial.Config
+
+		cnf.Address  = config.MbRtu.Address
+		cnf.BaudRate = config.MbRtu.BaudRate
+		cnf.DataBits = config.MbRtu.DataBits
+		cnf.StopBits = config.MbRtu.StopBits
+		cnf.Parity   = config.MbRtu.Parity
+		cnf.Timeout  = config.MbRtu.Timeout * time.Second
+
+		err = server.ListenRTU(&cnf)
+		if err == nil {
+			buf.WriteString(fmt.Sprintln("ModbusRTU Server listening on: ", "COM1"))
+		} else {
+			log.Printf("%v\n", err)
+			buf.WriteString(fmt.Sprintln("%v", err))
+		}
+	}
+
+	defer server.Close()
 }
 
 const strDefaultSettings =
@@ -136,8 +142,14 @@ const strDefaultSettings =
   modbusRTUEnabled = false
 
 [modbusTCP]
-  ip = "127.0.0.1"
+  ip   = "127.0.0.1"
   port = 502
 
 [modbusRTU]
+  address  = "COM1"
+  baudRate = 2400
+  dataBits = 8         #Data bits: 5, 6, 7 or 8
+  stopBits = 1         #Stop bits: 1 or 2
+  parity   = "N"       #Parity: "N" - None, "E" - Even, "O" - Odd
+  timeout  = 10        #Timeout Unit: Second
 `

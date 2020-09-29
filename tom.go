@@ -63,7 +63,7 @@ func main() {
 	buf.WriteString(fmt.Sprintln("Application  :", applName))
 	buf.WriteString(fmt.Sprintln("Configuration:", fileSet))
 	buf.WriteString(fmt.Sprintln("Config Title :", config.Title))
-	buf.WriteString(fmt.Sprintln("Date Time    :", strTime))
+	buf.WriteString(fmt.Sprintln("Date Time    :", strTime, "LIHUI"))
 	buf.WriteString("\n")
 
 	executeSettings()
