@@ -53,8 +53,6 @@ var buf bytes.Buffer
 var fileSet string
 var fileLog string
 
-var mbServerRTU *mbserver.Server
-var mbServerTCP *mbserver.Server
 
 func init() {
 	strApp := path.Base(os.Args[0])
@@ -82,6 +80,10 @@ func main() {
 	buf.WriteString(fmt.Sprintln("Date Time    :", strTime, "LIHUI"))
 	buf.WriteString("\n")
 
+	server = mbserver.NewServer()
+	initModbusServer(server)
+	defer server.Close()
+
 	executeSettings()
 	fmt.Printf(buf.String())
 
@@ -97,8 +99,6 @@ func main() {
 }
 
 func executeSettings() {
-	server = mbserver.NewServer()
-
 	if config.Enable.MbTcpEn {
 		str := config.MbTcp.Ip + ":" + strconv.Itoa(config.MbTcp.Port)
 		err = server.ListenTCP(str)
@@ -123,14 +123,29 @@ func executeSettings() {
 
 		err = server.ListenRTU(&cnf)
 		if err == nil {
-			buf.WriteString(fmt.Sprintln("ModbusRTU Server listening on: ", "COM1"))
+			buf.WriteString(fmt.Sprintln("ModbusRTU Server listening on: ",
+				cnf.Address,
+				strconv.Itoa(cnf.BaudRate),
+				strconv.Itoa(cnf.DataBits),
+				strconv.Itoa(cnf.StopBits),
+				cnf.Parity,
+				strconv.Itoa(int(cnf.Timeout / time.Second))))
 		} else {
 			log.Printf("%v\n", err)
 			buf.WriteString(fmt.Sprintln("%v", err))
 		}
 	}
+}
 
-	defer server.Close()
+func initModbusServer(s *mbserver.Server) {
+	s.DiscreteInputs[0] = 1
+	s.DiscreteInputs[1] = 1
+	s.Coils[0] = 1
+	s.Coils[1] = 1
+	s.HoldingRegisters[0] = 100
+	s.HoldingRegisters[1] = 200
+	s.InputRegisters[0] = 30000
+	s.InputRegisters[1] = 40000
 }
 
 const strDefaultSettings =
@@ -142,7 +157,7 @@ const strDefaultSettings =
   modbusRTUEnabled = false
 
 [modbusTCP]
-  ip   = "127.0.0.1"
+  ip   = "0.0.0.0"
   port = 502
 
 [modbusRTU]
