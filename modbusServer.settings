@@ -12,7 +12,13 @@ title = "Default Settings for ModbusTCP and ModbusRTU Server Simulator"
 [modbusRTU]
   address  = "COM1"
   baudRate = 2400
-  dataBits = 8         #Data bits: 5, 6, 7 or 8
-  stopBits = 1         #Stop bits: 1 or 2
-  parity   = "N"       #Parity: "N" - None, "E" - Even, "O" - Odd
-  timeout  = 10        #Timeout Unit: Second
+  dataBits = 8         #5, 6, 7 or 8
+  stopBits = 1         #1 or 2
+  parity   = "N"       #"N" - None, "E" - Even, "O" - Odd
+  timeout  = 10        #Unit: Second
+
+[registers]
+  discreteInputs   = [[0,     6], [1,     1], [2,     2], [3,     3]]
+  coils            = [[0,    60], [1,    10], [2,    20], [3,    30]]
+  holdingRegisters = [[0,   600], [1,   100], [2,   200], [3,   300]]
+  inputRegisters   = [[0, 60000], [1, 10000], [2, 20000], [3, 30000]]

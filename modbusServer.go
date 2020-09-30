@@ -19,10 +19,11 @@ import (
 )
 
 type tomlConfig struct {
-	Title   string
-	Enable  enable `toml:"enable"`
+	Title   string    `toml:"title"`
+	Enable  enable    `toml:"enable"`
 	MbTcp   modbusTCP `toml:"modbusTCP"`
-	MbRtu   modbusRTU `toml:"modbusRtu"`
+	MbRtu   modbusRTU `toml:"modbusRTU"`
+	MbReg   registers `toml:"registers"`
 }
 
 type enable struct {
@@ -43,6 +44,13 @@ type modbusRTU struct {
 	StopBits int            `toml:"stopBits"`
 	Parity   string         `toml:"parity"`
 	Timeout  time.Duration  `toml:"timeout"`
+}
+
+type registers struct {
+	DiscreteInputs    [][2]uint32  `toml:"discreteInputs"`
+	Coils             [][2]uint32  `toml:"coils"`
+	HoldingRegisters  [][2]uint32  `toml:"holdingRegisters"`
+	InputRegisters    [][2]uint32  `toml:"inputRegisters"`
 }
 
 var applName string
@@ -138,14 +146,21 @@ func executeSettings() {
 }
 
 func initModbusServer(s *mbserver.Server) {
-	s.DiscreteInputs[0] = 1
-	s.DiscreteInputs[1] = 1
-	s.Coils[0] = 1
-	s.Coils[1] = 1
-	s.HoldingRegisters[0] = 100
-	s.HoldingRegisters[1] = 200
-	s.InputRegisters[0] = 30000
-	s.InputRegisters[1] = 40000
+	for _, v := range config.MbReg.DiscreteInputs {
+		s.DiscreteInputs[v[0]] = byte(v[1])
+	}
+
+	for _, v := range config.MbReg.Coils {
+		s.Coils[v[0]] = byte(v[1])
+	}
+
+	for _, v := range config.MbReg.HoldingRegisters {
+		s.HoldingRegisters[v[0]] = uint16(v[1])
+	}
+
+	for _, v := range config.MbReg.InputRegisters {
+		s.InputRegisters[v[0]] = uint16(v[1])
+	}
 }
 
 const strDefaultSettings =
@@ -163,8 +178,14 @@ const strDefaultSettings =
 [modbusRTU]
   address  = "COM1"
   baudRate = 2400
-  dataBits = 8         #Data bits: 5, 6, 7 or 8
-  stopBits = 1         #Stop bits: 1 or 2
-  parity   = "N"       #Parity: "N" - None, "E" - Even, "O" - Odd
-  timeout  = 10        #Timeout Unit: Second
+  dataBits = 8         #5, 6, 7 or 8
+  stopBits = 1         #1 or 2
+  parity   = "N"       #"N" - None, "E" - Even, "O" - Odd
+  timeout  = 10        #Unit: Second
+
+[registers]
+  discreteInputs   = [[0,     6], [1,     1], [2,     2], [3,     3]]
+  coils            = [[0,    60], [1,    10], [2,    20], [3,    30]]
+  holdingRegisters = [[0,   600], [1,   100], [2,   200], [3,   300]]
+  inputRegisters   = [[0, 60000], [1, 10000], [2, 20000], [3, 30000]]
 `
