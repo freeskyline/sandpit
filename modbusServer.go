@@ -49,8 +49,8 @@ type modbusRTU struct {
 type registers struct {
 	DiscreteInputs    [][2]uint32  `toml:"discreteInputs"`
 	Coils             [][2]uint32  `toml:"coils"`
-	HoldingRegisters  [][2]uint32  `toml:"holdingRegisters"`
 	InputRegisters    [][2]uint32  `toml:"inputRegisters"`
+	HoldingRegisters  [][2]uint32  `toml:"holdingRegisters"`
 }
 
 var applName string
@@ -154,12 +154,12 @@ func initModbusServer(s *mbserver.Server) {
 		s.Coils[v[0]] = byte(v[1])
 	}
 
-	for _, v := range config.MbReg.HoldingRegisters {
-		s.HoldingRegisters[v[0]] = uint16(v[1])
-	}
-
 	for _, v := range config.MbReg.InputRegisters {
 		s.InputRegisters[v[0]] = uint16(v[1])
+	}
+
+	for _, v := range config.MbReg.HoldingRegisters {
+		s.HoldingRegisters[v[0]] = uint16(v[1])
 	}
 }
 
@@ -186,6 +186,6 @@ const strDefaultSettings =
 [registers]
   discreteInputs   = [[0,     6], [1,     1], [2,     2], [3,     3]]
   coils            = [[0,    60], [1,    10], [2,    20], [3,    30]]
-  holdingRegisters = [[0,   600], [1,   100], [2,   200], [3,   300]]
-  inputRegisters   = [[0, 60000], [1, 10000], [2, 20000], [3, 30000]]
+  inputRegisters   = [[0,   600], [1,   100], [2,   200], [3,   300]]
+  holdingRegisters = [[0, 60000], [1, 10000], [2, 20000], [3, 30000]]
 `

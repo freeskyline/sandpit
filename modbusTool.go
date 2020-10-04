@@ -50,8 +50,8 @@ type modbusRTU struct {
 type registers struct {
 	DiscreteInputs    [][2]uint16  `toml:"discreteInputs"`
 	Coils             [][2]uint16  `toml:"coils"`
-	HoldingRegisters  [][2]uint16  `toml:"holdingRegisters"`
 	InputRegisters    [][2]uint16  `toml:"inputRegisters"`
+	HoldingRegisters  [][2]uint16  `toml:"holdingRegisters"`
 }
 
 var applName string
@@ -170,9 +170,9 @@ func executeQueries() {
 		}
 	}
 
-	for _, v := range config.MbReg.HoldingRegisters {
-		results, err = client.ReadHoldingRegisters(v[0], v[1])
-		str := "\nReadHoldingRegisters: " + strconv.Itoa(int(v[0])) + "," + strconv.Itoa(int(v[1]))
+	for _, v := range config.MbReg.InputRegisters {
+		results, err = client.ReadInputRegisters(v[0], v[1])
+		str := "\nReadInputRegisters: " + strconv.Itoa(int(v[0])) + "," + strconv.Itoa(int(v[1]))
 		if(err == nil) {
 			buf.WriteString(fmt.Sprintln(str, "OK"))
 			buf.WriteString(fmt.Sprintln(results))
@@ -181,9 +181,9 @@ func executeQueries() {
 		}
 	}
 
-	for _, v := range config.MbReg.InputRegisters {
-		results, err = client.ReadInputRegisters(v[0], v[1])
-		str := "\nReadInputRegisters: " + strconv.Itoa(int(v[0])) + "," + strconv.Itoa(int(v[1]))
+	for _, v := range config.MbReg.HoldingRegisters {
+		results, err = client.ReadHoldingRegisters(v[0], v[1])
+		str := "\nReadHoldingRegisters: " + strconv.Itoa(int(v[0])) + "," + strconv.Itoa(int(v[1]))
 		if(err == nil) {
 			buf.WriteString(fmt.Sprintln(str, "OK"))
 			buf.WriteString(fmt.Sprintln(results))
@@ -218,6 +218,6 @@ const strDefaultSettings =
 [registers]
   discreteInputs   = [[0,  16], [1,   1], [2,   1], [3,   1]]
   coils            = [[0,  64], [1,   1], [2,   1], [3,   1]]
-  holdingRegisters = [[0, 100], [1,   3], [2,   1], [3,   1]]
   inputRegisters   = [[0, 100], [1,   3], [2,   1], [3,   1]]
+  holdingRegisters = [[0, 100], [1,   3], [2,   1], [3,   1]]
 `

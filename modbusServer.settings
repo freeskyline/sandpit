@@ -20,5 +20,5 @@ title = "Default Settings for ModbusTCP and ModbusRTU Server Simulator"
 [registers]
   discreteInputs   = [[0,     6], [1,     1], [2,     2], [3,     3]]
   coils            = [[0,    60], [1,    10], [2,    20], [3,    30]]
-  holdingRegisters = [[0,   600], [1,   100], [2,   200], [3,   300]]
-  inputRegisters   = [[0, 60000], [1, 10000], [2, 20000], [3, 30000]]
+  inputRegisters   = [[0,   600], [1,   100], [2,   200], [3,   300]]
+  holdingRegisters = [[0, 60000], [1, 10000], [2, 20000], [3, 30000]]
