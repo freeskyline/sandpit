@@ -9,4 +9,4 @@ title = "TOM Default Settings"
   data2 = [100.01, 200.20, 300.50, 100.01, 200.20, 300.50, 100.01, 200.20, 300.50]
 
 [userlist]
-  list = [{Id = "Centaur Enegy Aware, Webex", usr = "1203337876", pwd = "TnvTyJtP844"}]
+  list = [{Id = "", usr = "1203337876", pwd = "TnvTyJtP844"}]
