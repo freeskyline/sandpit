@@ -23,6 +23,7 @@ type tomlConfig struct {
 	MbTcp   modbusTCP `toml:"modbusTCP"`
 	MbRtu   modbusRTU `toml:"modbusRTU"`
 	MbReg   registers `toml:"registers"`
+	MbWrg   writing   `toml:"writing"`
 }
 
 type enable struct {
@@ -52,6 +53,11 @@ type registers struct {
 	Coils             [][2]uint16  `toml:"coils"`
 	InputRegisters    [][2]uint16  `toml:"inputRegisters"`
 	HoldingRegisters  [][2]uint16  `toml:"holdingRegisters"`
+}
+
+type writing struct {
+	SingleCoil        [][2]uint16  `toml:"singleCoil"`
+	SingleRegister    [][2]uint16  `toml:"singleRegister"`
 }
 
 var applName string
@@ -191,6 +197,40 @@ func executeQueries() {
 			buf.WriteString(fmt.Sprintln(str, "NG", err))
 		}
 	}
+
+	buf.WriteString(fmt.Sprintln("\n----------------------------------------"))
+
+	for _, v := range config.MbWrg.SingleCoil {
+		const COIL_ON  = 0xFF00
+		const COIL_OFF = 0x0000
+		var val uint16
+
+		if (v[1] == COIL_OFF) {
+			val = COIL_OFF
+		} else {
+			val = COIL_ON
+		}
+
+		results, err = client.WriteSingleCoil(v[0], val)
+		str := "\nWriteSingleCoil: " + strconv.Itoa(int(v[0])) + "," + strconv.Itoa(int(v[1]))
+		if(err == nil) {
+			buf.WriteString(fmt.Sprintln(str, "OK"))
+			buf.WriteString(fmt.Sprintln(results))
+		} else {
+			buf.WriteString(fmt.Sprintln(str, "NG", err))
+		}
+	}
+
+	for _, v := range config.MbWrg.SingleRegister {
+		results, err = client.WriteSingleRegister(v[0], v[1])
+		str := "\nWriteSingleRegister: " + strconv.Itoa(int(v[0])) + "," + strconv.Itoa(int(v[1]))
+		if(err == nil) {
+			buf.WriteString(fmt.Sprintln(str, "OK"))
+			buf.WriteString(fmt.Sprintln(results))
+		} else {
+			buf.WriteString(fmt.Sprintln(str, "NG", err))
+		}
+	}
 }
 
 const strDefaultSettings =
@@ -220,4 +260,8 @@ const strDefaultSettings =
   coils            = [[0,  64], [1,   1], [2,   1], [3,   1]]
   inputRegisters   = [[0, 100], [1,   3], [2,   1], [3,   1]]
   holdingRegisters = [[0, 100], [1,   3], [2,   1], [3,   1]]
+
+[writing]
+  singleCoil       = [[0,   1], [1,   1]]
+  singleRegister   = [[0, 123], [1, 234]]
 `
