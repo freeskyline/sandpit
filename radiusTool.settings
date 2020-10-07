@@ -1,0 +1,14 @@
+title = "Default Settings for Radius Client Tool"
+
+[enable]
+  logAntoGenEnabled = false
+  accountingEnabled = false
+
+[server]
+  ip     = "127.0.0.1"
+  port   = 1812
+  secret = "secret1234"
+
+[user]
+  usr = "peter"
+  pwd = "Password1234"
