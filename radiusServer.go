@@ -107,7 +107,7 @@ func executeSettings() {
 			}
 		}
 
-		log.Printf("Writing %v to %v", code, r.RemoteAddr)
+		log.Printf("Writing %v to %v %v %v", code, r.RemoteAddr, usr, pwd)
 		w.Write(r.Response(code))
 	}
 
@@ -116,7 +116,7 @@ func executeSettings() {
 	autServer.Handler      = radius.HandlerFunc(handler1)
 
 	buf.WriteString(fmt.Sprintln("Authen radius server listening on:",autServer.Addr))
-	buf.WriteString(fmt.Sprintln("Secret:", config.Server.AutSecret))
+	buf.WriteString(fmt.Sprintln("Shared secret:", config.Server.AutSecret))
 
 	if config.Enable.AccEn {
 	}
