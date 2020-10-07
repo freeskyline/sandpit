@@ -1,0 +1,19 @@
+title = "Default Settings for Radius Server Simulator"
+
+[enable]
+  logAntoGenEnabled = true
+  accountingEnabled = false
+
+[server]
+  ip = "0.0.0.0"
+  autPort = 1812
+  accPort = 1813
+  autSecret = "secret1234"
+  accSecret = "secret5678"
+
+[user]
+  allowlist = [["peter", "Password1234"],
+               ["lihui", "Password5678"]]
+
+  blocklist = [["PETER", "Password1234"],
+               ["lihui", "Password5678"]]
