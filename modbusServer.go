@@ -28,7 +28,7 @@ type tomlConfig struct {
 }
 
 type enable struct {
-	LogsEn   bool  `toml:"logsAntoGenEnabled"`
+	LogsEn   bool  `toml:"logAntoGenEnabled"`
 	MbTcpEn  bool  `toml:"modbusTCPEnabled"`
 	MbRtuEn  bool  `toml:"modbusRTUEnabled"`
 }
@@ -262,7 +262,7 @@ const strDefaultSettings =
 `title = "Default Settings for ModbusTCP and ModbusRTU Server Simulator"
 
 [enable]
-  logsAntoGenEnabled = false
+  logAntoGenEnabled = false
   modbusTCPEnabled = true
   modbusRTUEnabled = false
 

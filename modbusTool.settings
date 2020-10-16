@@ -1,8 +1,9 @@
 title = "Default Settings for ModbusTCP and ModbusRTU Client Tool"
 
 [enable]
-  logsAntoGenEnabled = false
-  modbusRTUEnabled = false
+  appDataUnitEnabled = true
+  logAntoGenEnabled  = false
+  modbusRTUEnabled   = true
 
 [modbusTCP]
   ip   = "127.0.0.1"

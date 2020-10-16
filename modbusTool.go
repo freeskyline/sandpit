@@ -27,7 +27,8 @@ type tomlConfig struct {
 }
 
 type enable struct {
-	LogsEn   bool  `toml:"logsAntoGenEnabled"`
+	AppDuEn  bool  `toml:"appDataUnitEnabled"`
+	LogsEn   bool  `toml:"logAntoGenEnabled"`
 	MbRtuEn  bool  `toml:"modbusRTUEnabled"`
 }
 
@@ -134,6 +135,9 @@ func executeSettings() {
 		rtuHandler.Parity   = config.MbRtu.Parity
 		rtuHandler.SlaveId  = config.MbRtu.SlaveId
 		rtuHandler.Timeout  = config.MbRtu.Timeout * time.Second
+		if config.Enable.AppDuEn {
+			rtuHandler.Logger = log.New(os.Stdout, "Test: ", log.LstdFlags)
+		}
 		buf.WriteString(fmt.Sprintln("ModbusRTU:", config.MbRtu.Address,
 				strconv.Itoa(config.MbRtu.BaudRate),
 				strconv.Itoa(config.MbRtu.DataBits),
@@ -146,7 +150,9 @@ func executeSettings() {
 		tcpHandler = modbus.NewTCPClientHandler(str)
 		tcpHandler.Timeout = config.MbTcp.Timeout * time.Second
 		tcpHandler.SlaveId = config.MbTcp.SlaveId
-		//tcpHandler.Logger = log.New(os.Stdout, "test: ", log.LstdFlags)
+		if config.Enable.AppDuEn {
+			tcpHandler.Logger = log.New(os.Stdout, "Test: ", log.LstdFlags)
+		}
 		buf.WriteString(fmt.Sprintln("ModbusTCP:", str))
 		buf.WriteString(fmt.Sprintln("Slave ID :", strconv.Itoa(int(config.MbTcp.SlaveId))))
 		buf.WriteString(fmt.Sprintln("Timeout  :", strconv.Itoa(int(config.MbTcp.Timeout)), "second(s)"))
@@ -237,8 +243,9 @@ const strDefaultSettings =
 `title = "Default Settings for ModbusTCP and ModbusRTU Client Tool"
 
 [enable]
-  logsAntoGenEnabled = false
-  modbusRTUEnabled = false
+  appDataUnitEnabled = true
+  logAntoGenEnabled  = false
+  modbusRTUEnabled   = false
 
 [modbusTCP]
   ip   = "127.0.0.1"
