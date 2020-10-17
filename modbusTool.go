@@ -159,6 +159,27 @@ func executeSettings() {
 	}
 }
 
+func transDiscreteResultsToString(data []byte) (bin string, hex string){
+	for _, v := range data {
+		bin += fmt.Sprintf("%08b ",      v)
+		hex += fmt.Sprintf("%02X       ",v)
+	}
+
+	return
+}
+
+func transRegisterResultsToString(data []byte) (dec string, hex string){
+	NUM := len(data)
+
+	for i := 0; i < NUM; i += 2 {
+		val := (uint16(data[i + 0]) << 8) + uint16(data[i + 1])
+		dec += fmt.Sprintf("%d\t",  val)
+		hex += fmt.Sprintf("%04X\t",val)
+	}
+
+	return
+}
+
 func executeQueries() {
 	for _, v := range config.MbReg.DiscreteInputs {
 		results, err = client.ReadDiscreteInputs(v[0], v[1])
@@ -166,6 +187,9 @@ func executeQueries() {
 		if(err == nil) {
 			buf.WriteString(fmt.Sprintln(str, "OK"))
 			buf.WriteString(fmt.Sprintln(results))
+			bin, hex := transDiscreteResultsToString(results)
+			buf.WriteString(fmt.Sprintln("Bin:", bin))
+			buf.WriteString(fmt.Sprintln("Hex:", hex))
 		} else {
 			buf.WriteString(fmt.Sprintln(str, "NG", err))
 		}
@@ -177,6 +201,9 @@ func executeQueries() {
 		if(err == nil) {
 			buf.WriteString(fmt.Sprintln(str, "OK"))
 			buf.WriteString(fmt.Sprintln(results))
+			bin, hex := transDiscreteResultsToString(results)
+			buf.WriteString(fmt.Sprintln("Bin:", bin))
+			buf.WriteString(fmt.Sprintln("Hex:", hex))
 		} else {
 			buf.WriteString(fmt.Sprintln(str, "NG", err))
 		}
@@ -188,6 +215,9 @@ func executeQueries() {
 		if(err == nil) {
 			buf.WriteString(fmt.Sprintln(str, "OK"))
 			buf.WriteString(fmt.Sprintln(results))
+			dec, hex := transRegisterResultsToString(results)
+			buf.WriteString(fmt.Sprintln("Dec:", dec))
+			buf.WriteString(fmt.Sprintln("Hex:", hex))
 		} else {
 			buf.WriteString(fmt.Sprintln(str, "NG", err))
 		}
@@ -199,6 +229,9 @@ func executeQueries() {
 		if(err == nil) {
 			buf.WriteString(fmt.Sprintln(str, "OK"))
 			buf.WriteString(fmt.Sprintln(results))
+			dec, hex := transRegisterResultsToString(results)
+			buf.WriteString(fmt.Sprintln("Dec:", dec))
+			buf.WriteString(fmt.Sprintln("Hex:", hex))
 		} else {
 			buf.WriteString(fmt.Sprintln(str, "NG", err))
 		}
