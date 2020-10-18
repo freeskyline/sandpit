@@ -29,6 +29,7 @@ type tomlConfig struct {
 type enable struct {
 	AppDuEn  bool  `toml:"appDataUnitEnabled"`
 	LogsEn   bool  `toml:"logAntoGenEnabled"`
+	MbStrEn  bool  `toml:"strRenderEnabled"`
 	MbRtuEn  bool  `toml:"modbusRTUEnabled"`
 }
 
@@ -101,7 +102,7 @@ func main() {
 
 	executeSettings()
 
-	if(tcpHandler != nil) {
+	if tcpHandler != nil {
 		err = tcpHandler.Connect()
 		defer tcpHandler.Close()
 		client = modbus.NewClient(tcpHandler)
@@ -184,7 +185,7 @@ func executeQueries() {
 	for _, v := range config.MbReg.DiscreteInputs {
 		results, err = client.ReadDiscreteInputs(v[0], v[1])
 		str := "\nReadDiscreteInputs: " + strconv.Itoa(int(v[0])) + "," + strconv.Itoa(int(v[1]))
-		if(err == nil) {
+		if err == nil {
 			buf.WriteString(fmt.Sprintln(str, "OK"))
 			buf.WriteString(fmt.Sprintln(results))
 			bin, hex := transDiscreteResultsToString(results)
@@ -198,7 +199,7 @@ func executeQueries() {
 	for _, v := range config.MbReg.Coils {
 		results, err = client.ReadCoils(v[0], v[1])
 		str := "\nReadCoils: " + strconv.Itoa(int(v[0])) + "," + strconv.Itoa(int(v[1]))
-		if(err == nil) {
+		if err == nil {
 			buf.WriteString(fmt.Sprintln(str, "OK"))
 			buf.WriteString(fmt.Sprintln(results))
 			bin, hex := transDiscreteResultsToString(results)
@@ -212,12 +213,15 @@ func executeQueries() {
 	for _, v := range config.MbReg.InputRegisters {
 		results, err = client.ReadInputRegisters(v[0], v[1])
 		str := "\nReadInputRegisters: " + strconv.Itoa(int(v[0])) + "," + strconv.Itoa(int(v[1]))
-		if(err == nil) {
+		if err == nil {
 			buf.WriteString(fmt.Sprintln(str, "OK"))
 			buf.WriteString(fmt.Sprintln(results))
 			dec, hex := transRegisterResultsToString(results)
 			buf.WriteString(fmt.Sprintln("Dec:", dec))
 			buf.WriteString(fmt.Sprintln("Hex:", hex))
+			if config.Enable.MbStrEn {
+				buf.WriteString(fmt.Sprintln("Str:", string(results)))
+			}
 		} else {
 			buf.WriteString(fmt.Sprintln(str, "NG", err))
 		}
@@ -226,12 +230,15 @@ func executeQueries() {
 	for _, v := range config.MbReg.HoldingRegisters {
 		results, err = client.ReadHoldingRegisters(v[0], v[1])
 		str := "\nReadHoldingRegisters: " + strconv.Itoa(int(v[0])) + "," + strconv.Itoa(int(v[1]))
-		if(err == nil) {
+		if err == nil {
 			buf.WriteString(fmt.Sprintln(str, "OK"))
 			buf.WriteString(fmt.Sprintln(results))
 			dec, hex := transRegisterResultsToString(results)
 			buf.WriteString(fmt.Sprintln("Dec:", dec))
 			buf.WriteString(fmt.Sprintln("Hex:", hex))
+			if config.Enable.MbStrEn {
+				buf.WriteString(fmt.Sprintln("Str:", string(results)))
+			}
 		} else {
 			buf.WriteString(fmt.Sprintln(str, "NG", err))
 		}
@@ -244,7 +251,7 @@ func executeQueries() {
 		const COIL_OFF = 0x0000
 		var val uint16
 
-		if (v[1] == COIL_OFF) {
+		if v[1] == COIL_OFF {
 			val = COIL_OFF
 		} else {
 			val = COIL_ON
@@ -252,7 +259,7 @@ func executeQueries() {
 
 		results, err = client.WriteSingleCoil(v[0], val)
 		str := "\nWriteSingleCoil: " + strconv.Itoa(int(v[0])) + "," + strconv.Itoa(int(v[1]))
-		if(err == nil) {
+		if err == nil {
 			buf.WriteString(fmt.Sprintln(str, "OK"))
 			buf.WriteString(fmt.Sprintln(results))
 		} else {
@@ -263,7 +270,7 @@ func executeQueries() {
 	for _, v := range config.MbWrg.SingleRegister {
 		results, err = client.WriteSingleRegister(v[0], v[1])
 		str := "\nWriteSingleRegister: " + strconv.Itoa(int(v[0])) + "," + strconv.Itoa(int(v[1]))
-		if(err == nil) {
+		if err == nil {
 			buf.WriteString(fmt.Sprintln(str, "OK"))
 			buf.WriteString(fmt.Sprintln(results))
 		} else {
@@ -278,6 +285,7 @@ const strDefaultSettings =
 [enable]
   appDataUnitEnabled = true
   logAntoGenEnabled  = false
+  strRenderEnabled   = false
   modbusRTUEnabled   = false
 
 [modbusTCP]

@@ -3,6 +3,7 @@ title = "Default Settings for ModbusTCP and ModbusRTU Client Tool"
 [enable]
   appDataUnitEnabled = true
   logAntoGenEnabled  = false
+  strRenderEnabled   = false
   modbusRTUEnabled   = false
 
 [modbusTCP]
