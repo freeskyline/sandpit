@@ -1,0 +1,21 @@
+title = "Default Settings for SNMP Client Tool"
+
+[enable]
+  debugDataEnabled  = false
+  logAntoGenEnabled = false
+
+[target]
+  ip   = "127.0.0.1"
+  port = 502
+  timeout = 3          #Unit: Second
+  community = "public"
+  version   = "2c"    #"1","2c"
+
+[oid]
+  snmpget = [".1.3.6.1.2.1.1.1.0",
+             ".1.3.6.1.2.1.1.1.1",
+             ".1.3.6.1.2.1.1.1.2",
+             ".1.3.6.1.2.1.1.1.3"]
+
+  getnext = [".1.3.6.1.1",
+             ".1.3.6.1.4"]
