@@ -132,7 +132,7 @@ func executeSettings() {
 		rtuHandler = modbus.NewRTUClientHandler(config.MbRtu.Address)
 		rtuHandler.BaudRate = config.MbRtu.BaudRate
 		rtuHandler.DataBits = config.MbRtu.DataBits
-		rtuHandler.StopBits = config.MbRtu.DataBits
+		rtuHandler.StopBits = config.MbRtu.StopBits
 		rtuHandler.Parity   = config.MbRtu.Parity
 		rtuHandler.SlaveId  = config.MbRtu.SlaveId
 		rtuHandler.Timeout  = config.MbRtu.Timeout * time.Second
