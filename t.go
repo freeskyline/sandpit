@@ -53,7 +53,14 @@ func testMain() {
 func main() {
 	flag.Parse();
 	fmt.Println("-------------------------Begin-------------------------")
-	defer fmt.Println("-------------------------End---------------------------")
+	defer fmt.Println("\n-------------------------End---------------------------")
+	//testMain()
 
-	testMain()
+	testEllipsis(100, 200, 300)
+}
+
+func testEllipsis(args ...int) {
+	for i, v := range args {
+		fmt.Printf("%d\t%v\n", i, v)
+	}
 }
