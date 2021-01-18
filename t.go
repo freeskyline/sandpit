@@ -24,13 +24,9 @@ func f() (result int) {
 	return 0
 }
 
-var str1 = flag.String("s1", "aaaa", "The String One")
-var str2 = flag.String("s2", "bbbb", "The String Two")
-
-func main() {
-	flag.Parse();
-	fmt.Println("-------------------------Begin-------------------------")
-	defer fmt.Println("-------------------------End---------------------------")
+func testMain() {
+	str1 := flag.String("s1", "aaaa", "The String One")
+	str2 := flag.String("s2", "bbbb", "The String Two")
 
 	fmt.Printf("Pi: %f\n", math.Pi);
 	fmt.Printf("Pi: %e\n", math.Pi);
@@ -52,4 +48,12 @@ func main() {
 	fmt.Println(*str1)
 	fmt.Println(*str2)
 	fmt.Println(os.Args)
+}
+
+func main() {
+	flag.Parse();
+	fmt.Println("-------------------------Begin-------------------------")
+	defer fmt.Println("-------------------------End---------------------------")
+
+	testMain()
 }
