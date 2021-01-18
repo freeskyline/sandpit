@@ -56,11 +56,15 @@ func main() {
 	defer fmt.Println("\n-------------------------End---------------------------")
 	//testMain()
 
-	testEllipsis(100, 200, 300)
+	testEllipsis(100, 200, 300, 400, 500, 600, 700)
+}
+
+func testEllipsis0(a []int) {
+	for i, v := range a {
+		fmt.Printf("%d\t%v\n", i, v)
+	}
 }
 
 func testEllipsis(args ...int) {
-	for i, v := range args {
-		fmt.Printf("%d\t%v\n", i, v)
-	}
+	testEllipsis0(args)
 }
