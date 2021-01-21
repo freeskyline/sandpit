@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"regexp"
 	"runtime"
 )
 
@@ -57,6 +58,7 @@ func main() {
 	//testMain()
 
 	testEllipsis(100, 200, 300, 400, 500, 600, 700)
+	testRegex()
 }
 
 func testEllipsis0(a []int) {
@@ -67,4 +69,11 @@ func testEllipsis0(a []int) {
 
 func testEllipsis(args ...int) {
 	testEllipsis0(args)
+}
+
+func testRegex() {
+	re := regexp.MustCompile("(gopher){2}")
+	fmt.Println(re.MatchString("gopher"))
+	fmt.Println(re.MatchString("gophergopher"))
+	fmt.Println(re.MatchString("gophergophergopher"))
 }
