@@ -57,7 +57,7 @@ func main() {
 	defer fmt.Println("\n-------------------------End---------------------------")
 	//testMain()
 
-	testEllipsis(100, 200, 300, 400, 500, 600, 700)
+	//testEllipsis(100, 200, 300, 400, 500, 600, 700)
 	testRegex()
 }
 
@@ -76,4 +76,17 @@ func testRegex() {
 	fmt.Println(re.MatchString("gopher"))
 	fmt.Println(re.MatchString("gophergopher"))
 	fmt.Println(re.MatchString("gophergophergopher"))
+
+	ptn := "^[0-9]{3}[;]{1}[0-9]{1}[A-HJ-NP-Ya-hj-np-y]{1}[0-5]{1}[0-9]{1}[1-7]{1}[A-Za-z]{1}[A-Za-z]{2}[0-9]{2}$"
+	rgx := regexp.MustCompile(ptn)
+
+	var str string 
+	str = "000;4Q317LAA02"
+	fmt.Println(str,rgx.MatchString(str))
+	str = "001;4Q317LAA0A"
+	fmt.Println(str,rgx.MatchString(str))
+	str = "001;4Q311LAA02"
+	fmt.Println(str,rgx.MatchString(str))
+	str = "001;4Z311LAA02"
+	fmt.Println(str,rgx.MatchString(str))
 }
