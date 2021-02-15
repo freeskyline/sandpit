@@ -94,5 +94,7 @@ func testRegex() {
 }
 
 func testKgen() {
-	kgen.HelloKgen()
+	ver := kgen.GetVerTag()
+
+	fmt.Println(ver)
 }
